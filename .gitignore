@@ -1,0 +1,8 @@
+.DS_Store
+FindMissingFiles.py
+*.py~
+FixFileName.py
+Fix_UV_X_ps.py
+NNet/.DS_Store
+*.pyc
+NNet/Test_Plots/*
