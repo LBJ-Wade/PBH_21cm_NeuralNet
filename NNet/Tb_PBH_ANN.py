@@ -12,18 +12,21 @@ tf.set_random_seed(RANDOM_SEED)
 
 class Tb_PBH_Nnet(object):
     def __init__(self, mPBH, globalTb=True):
-        self.mPBH = mPBH
-        self.h_size = 30               # Number of hidden nodes
-        self.errThresh = 10
-        self.N_EPOCHS = 7000
+        self.mPBH = mPBH 
         self.globalTb=globalTb
         
-        self.grad_stepsize = 1e-5
-        
         if self.globalTb:
+            self.h_size = 40 # Number of hidden nodes
+            self.grad_stepsize = 1e-6
+            self.N_EPOCHS = 10000
+            self.errThresh = 10
             self.dirName = 'MetaGraphs/Tb_PBH_Mass_{:.0e}_Global'.format(self.mPBH)
             self.fileN = self.dirName + '/PBH21cm_Graph_Global_Mpbh_{:.0e}'.format(self.mPBH)
         else:
+            self.h_size = 40 # Number of hidden nodes
+            self.grad_stepsize = 1e-7
+            self.N_EPOCHS = 10000
+            self.errThresh = 10.
             self.dirName = 'MetaGraphs/Tb_PBH_Mass_{:.0e}_Power'.format(self.mPBH)
             self.fileN = self.dirName + '/PBH21cm_Graph_Power_Mpbh_{:.0e}'.format(self.mPBH)
 
@@ -125,7 +128,7 @@ class Tb_PBH_Nnet(object):
                 for start, end in zip(range(0, train_count, BATCH_SIZE),
                                       range(BATCH_SIZE, train_count + 1,BATCH_SIZE)):
                     sess.run(self.updates, feed_dict={self.X: self.train_X[start:end],
-                                                   self.y: self.train_y[start:end]})
+                                                      self.y: self.train_y[start:end]})
 
                 if i % 100 == 0:
                     train_accuracy = sess.run(self.perr_train, feed_dict={self.X: self.train_X, self.y: self.train_y})
@@ -144,7 +147,6 @@ class Tb_PBH_Nnet(object):
             saverMeta = tf.train.import_meta_graph(self.fileN + '.meta')
             self.saveNN.restore(sess, self.fileN)
             predictions = sess.run(self.yhat, feed_dict={self.X: np.insert(self.scalar.transform(evalVec), 0, 1., axis=1)})
-        
         return predictions
 
 

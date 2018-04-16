@@ -41,12 +41,10 @@ for dty in dirs:
             print dty, ff
             exit()
         for j in range(len(vals[:,0])):
-            if math.isnan(vals[j, 1]):
-                output = 0.
-            else:
-                output = vals[j, 1]
-            fullListFile.append([zval, vals[j, 0], np.log10(fpbh), np.log10(zetaUV), np.log10(zetaX), np.log10(tmin), np.log10(nAlpha),  np.log10(output)])
-            sve_vec.append([zval, vals[j, 0], output])
+            if math.isnan(vals[j, 1]) or vals[j,1] < 0.:
+                continue
+            fullListFile.append([zval, np.log10(vals[j, 0]), np.log10(fpbh), np.log10(zetaUV), np.log10(zetaX), np.log10(tmin), np.log10(nAlpha),  vals[j,1]])
+            sve_vec.append([zval, vals[j, 0], vals[j,1]])
  
     np.savetxt('TbFiles/tb_PowerSpectrum_mpbh_{:.0e}_fpbh_{:.0e}_zetaUV_{:.0f}_zetaX_{:.0e}_Tmin_{:.1e}_Nalpha_{:.0e}.dat'.format(mpbh,fpbh,zetaUV,
                 zetaX,tmin,nAlpha), sve_vec)

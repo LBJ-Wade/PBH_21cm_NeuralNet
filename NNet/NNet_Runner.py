@@ -1,5 +1,6 @@
 import os
-from Mpbh_Nnet import *
+from Tb_PBH_ANN import *
+from Xe_PBH_ANN import *
 
 #Runner for training and testing. Not intended for integration into code. 
 Mpbh = 100.
@@ -7,28 +8,31 @@ Mpbh = 100.
 # Train NNet
 Train = True
 KeepTraining = False
-
 # Load and Evaluate NNet
 Eval = False
+#Global Tb or power spectrum, or Xe NN
+tb_analysis = True
+GlobalTb = False
 
-#Global Tb or power spectrum
-GlobalTb = True
 
-
-redshift_1 = 10.5
-redshift_2 = 17.5
+redshift = 17.5
 fpbh = np.log10(1e-8)
 zetaUV = np.log10(50)
 zetaX = np.log10(2e56)
 Tmin = np.log10(5e4)
 Nalpha = np.log10(4e3)
-vec_in = [[redshift_1, fpbh, zetaUV, zetaX, Tmin, Nalpha], [redshift_2, fpbh, zetaUV, zetaX, Tmin, Nalpha]]
-if not GlobalTb:
-    k = 0.1
+vec_in = [[redshift, fpbh, zetaUV, zetaX, Tmin, Nalpha]]
+if not GlobalTb and tb_analysis:
+    k = np.log10(0.1)
     vec_in = [[redshift, k, fpbh, zetaUV, zetaX, Tmin, Nalpha]]
-#PBH_Nnet(Mpbh, globalTb=GlobalTb).main_nnet(train_nnet=Train, eval_nnet=Eval, keep_training=KeepTraining, evalVec=vec_in)
-init_pbh = PBH_Nnet(Mpbh, globalTb=GlobalTb)
-init_pbh.main_nnet()
+# Evaluate/Run
+if tb_analysis:
+    init_pbh = Tb_PBH_Nnet(Mpbh, globalTb=GlobalTb)
+    init_pbh.main_nnet()
+else:
+    init_pbh = Xe_PBH_Nnet(Mpbh)
+    init_pbh.main_nnet()
+
 if Train:
     init_pbh.train_NN(vec_in, keep_training=KeepTraining)
 if Eval:
