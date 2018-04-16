@@ -12,7 +12,7 @@ KeepTraining = False
 Eval = False
 #Global Tb or power spectrum, or Xe NN
 tb_analysis = True
-GlobalTb = False
+GlobalTb = True
 
 
 redshift = 17.5
