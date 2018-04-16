@@ -22,9 +22,9 @@ class Tb_PBH_Nnet(object):
             self.dirName = 'MetaGraphs/Tb_PBH_Mass_{:.0e}_Global'.format(self.mPBH)
             self.fileN = self.dirName + '/PBH21cm_Graph_Global_Mpbh_{:.0e}'.format(self.mPBH)
         else:
-            self.h_size = 40 # Number of hidden nodes
+            self.h_size = 100 # Number of hidden nodes
             self.grad_stepsize = 1e-7
-            self.errThresh = 10.
+            self.errThresh = 1.
             self.dirName = 'MetaGraphs/Tb_PBH_Mass_{:.0e}_Power'.format(self.mPBH)
             self.fileN = self.dirName + '/PBH21cm_Graph_Power_Mpbh_{:.0e}'.format(self.mPBH)
 
