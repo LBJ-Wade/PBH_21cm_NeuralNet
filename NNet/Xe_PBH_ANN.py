@@ -10,11 +10,11 @@ RANDOM_SEED = 42
 tf.set_random_seed(RANDOM_SEED)
 
 class Xe_PBH_Nnet(object):
-    def __init__(self, mPBH):
+    def __init__(self, mPBH, epochs=10000):
         self.mPBH = mPBH
         self.h_size = 30               # Number of hidden nodes
         self.errThresh = 10
-        self.N_EPOCHS = 5000
+        self.N_EPOCHS = epochs
         self.grad_stepsize = 1e-3
        
         self.dirName = 'MetaGraphs/Xe_PBH_Mass_{:.0e}_Power'.format(self.mPBH)
