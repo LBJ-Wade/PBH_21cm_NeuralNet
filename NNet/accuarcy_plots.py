@@ -31,7 +31,8 @@ path = os.getcwd()
 # Define type of anlaysis to be used and PBH mass
 test_plots = os.getcwd() + '/Test_Plots/'
 tb_analysis = True
-GlobalTb = False
+GlobalTb = True
+
 Mpbh = 100
 Zlist = np.linspace(6, 35, 70)
 klist = np.logspace(np.log10(0.05), np.log10(2), 70)
