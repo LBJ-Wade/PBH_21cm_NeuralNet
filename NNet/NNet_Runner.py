@@ -16,7 +16,7 @@ GlobalTb = False
 
 epochs = 20000
 
-redshift = 17.5
+redshift = 17.57
 fpbh = np.log10(1e-8)
 zetaUV = np.log10(50)
 zetaX = np.log10(2e56)
@@ -25,10 +25,10 @@ Nalpha = np.log10(4e3)
 vec_in = [[redshift, fpbh, zetaUV, zetaX, Tmin, Nalpha]]
 if not GlobalTb and tb_analysis:
     k = np.log10(0.1)
-    vec_in = [[redshift, k, fpbh, zetaUV, zetaX, Tmin, Nalpha]]
+    vec_in = [[k, fpbh, zetaUV, zetaX, Tmin, Nalpha]]
 # Evaluate/Run
 if tb_analysis:
-    init_pbh = Tb_PBH_Nnet(Mpbh, globalTb=GlobalTb, epochs=epochs)
+    init_pbh = Tb_PBH_Nnet(Mpbh, globalTb=GlobalTb, epochs=epochs, zfix=redshift)
     init_pbh.main_nnet()
 else:
     init_pbh = Xe_PBH_Nnet(Mpbh, epochs=epochs)

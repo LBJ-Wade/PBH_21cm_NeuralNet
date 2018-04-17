@@ -11,10 +11,11 @@ RANDOM_SEED = 42
 tf.set_random_seed(RANDOM_SEED)
 
 class Tb_PBH_Nnet(object):
-    def __init__(self, mPBH, globalTb=True, epochs=10000):
+    def __init__(self, mPBH, globalTb=True, epochs=10000, zfix=17.57):
         self.mPBH = mPBH
         self.globalTb=globalTb
         self.N_EPOCHS = epochs
+        self.zfix = zfix
         if self.globalTb:
             self.h_size = 40 # Number of hidden nodes
             self.grad_stepsize = 1e-6
@@ -22,11 +23,11 @@ class Tb_PBH_Nnet(object):
             self.dirName = 'MetaGraphs/Tb_PBH_Mass_{:.0e}_Global'.format(self.mPBH)
             self.fileN = self.dirName + '/PBH21cm_Graph_Global_Mpbh_{:.0e}'.format(self.mPBH)
         else:
-            self.h_size = 100 # Number of hidden nodes
-            self.grad_stepsize = 1e-7
+            self.h_size = 40 # Number of hidden nodes
+            self.grad_stepsize = 1e-6
             self.errThresh = 1.
-            self.dirName = 'MetaGraphs/Tb_PBH_Mass_{:.0e}_Power'.format(self.mPBH)
-            self.fileN = self.dirName + '/PBH21cm_Graph_Power_Mpbh_{:.0e}'.format(self.mPBH)
+            self.dirName = 'MetaGraphs/Tb_PBH_Mass_{:.0e}_Power_Zval_{:.2f}'.format(self.mPBH, self.zfix)
+            self.fileN = self.dirName + '/PBH21cm_Graph_Power_Mpbh_{:.0e}_Zval_{:.2f}'.format(self.mPBH, self.zfix)
 
         if not os.path.exists(self.dirName):
             os.mkdir(self.dirName)
@@ -51,8 +52,8 @@ class Tb_PBH_Nnet(object):
             fileNd = '../TbFiles/TbFull_Mpbh_{:.0e}.dat'.format(self.mPBH)
             inputN = 6
         else:
-            fileNd = '../TbFiles/TbFull_Power_Mpbh_{:.0e}.dat'.format(self.mPBH)
-            inputN = 7
+            fileNd = '../TbFiles/TbFull_Power_Mpbh_{:.0e}_Zval_{:.2f}.dat'.format(self.mPBH, self.zfix)
+            inputN = 6
 
         tbVals = np.loadtxt(fileNd)
         np.random.shuffle(tbVals)

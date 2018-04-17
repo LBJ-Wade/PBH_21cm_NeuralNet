@@ -5,6 +5,7 @@ import math
 
 dirs = glob.glob('PS_Files/PS_Files*')
 
+Zfix = 17.57 # must be one of the values already computed
 MpbhVal = 100
 fullListFile = []
 for dty in dirs:
@@ -40,13 +41,15 @@ for dty in dirs:
         if len(vals) == 0:
             print dty, ff
             exit()
+        if zval != Zfix:
+            continue
         for j in range(len(vals[:,0])):
             if math.isnan(vals[j, 1]) or vals[j,1] < 0.:
                 continue
-            fullListFile.append([zval, np.log10(vals[j, 0]), np.log10(fpbh), np.log10(zetaUV), np.log10(zetaX), np.log10(tmin), np.log10(nAlpha),  vals[j,1]])
+            fullListFile.append([np.log10(vals[j, 0]), np.log10(fpbh), np.log10(zetaUV), np.log10(zetaX), np.log10(tmin), np.log10(nAlpha),  vals[j,1]])
             sve_vec.append([zval, vals[j, 0], vals[j,1]])
  
     np.savetxt('TbFiles/tb_PowerSpectrum_mpbh_{:.0e}_fpbh_{:.0e}_zetaUV_{:.0f}_zetaX_{:.0e}_Tmin_{:.1e}_Nalpha_{:.0e}.dat'.format(mpbh,fpbh,zetaUV,
                 zetaX,tmin,nAlpha), sve_vec)
 
-np.savetxt('TbFiles/TbFull_Power_Mpbh_{:.0e}.dat'.format(MpbhVal), fullListFile, fmt='%.3e')
+np.savetxt('TbFiles/TbFull_Power_Mpbh_{:.0e}_Zval_{:.2f}.dat'.format(MpbhVal, Zfix), fullListFile, fmt='%.3e')
