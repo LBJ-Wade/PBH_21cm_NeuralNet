@@ -12,7 +12,7 @@ KeepTraining = False
 Eval = False
 #Global Tb or power spectrum, or Xe NN
 tb_analysis = True
-GlobalTb = True
+GlobalTb = False
 
 epochs = 20000
 
