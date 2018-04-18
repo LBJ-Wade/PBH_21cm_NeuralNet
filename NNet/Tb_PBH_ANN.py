@@ -17,14 +17,14 @@ class Tb_PBH_Nnet(object):
         self.N_EPOCHS = epochs
         self.zfix = zfix
         if self.globalTb:
-            self.h_size = 40 # Number of hidden nodes
+            self.h_size = 20 # Number of hidden nodes
             self.grad_stepsize = 1e-6
             self.errThresh = 10
             self.dirName = 'MetaGraphs/Tb_PBH_Mass_{:.0e}_Global'.format(self.mPBH)
             self.fileN = self.dirName + '/PBH21cm_Graph_Global_Mpbh_{:.0e}'.format(self.mPBH)
         else:
-            self.h_size = 40 # Number of hidden nodes
-            self.grad_stepsize = 1e-6
+            self.h_size = 20 # Number of hidden nodes
+            self.grad_stepsize = 1e-7
             self.errThresh = 1.
             self.dirName = 'MetaGraphs/Tb_PBH_Mass_{:.0e}_Power_Zval_{:.2f}'.format(self.mPBH, self.zfix)
             self.fileN = self.dirName + '/PBH21cm_Graph_Power_Mpbh_{:.0e}_Zval_{:.2f}'.format(self.mPBH, self.zfix)

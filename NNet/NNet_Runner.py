@@ -12,9 +12,9 @@ KeepTraining = False
 Eval = False
 #Global Tb or power spectrum, or Xe NN
 tb_analysis = True
-GlobalTb = False
+GlobalTb = True
 
-epochs = 20000
+epochs = 40000
 
 redshift = 17.57
 fpbh = np.log10(1e-8)
