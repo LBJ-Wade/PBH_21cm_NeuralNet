@@ -30,7 +30,7 @@ path = os.getcwd()
 # Set global parameters and init NN
 # Define type of anlaysis to be used and PBH mass
 test_plots = os.getcwd() + '/Test_Plots/'
-tb_analysis = True
+tb_analysis = False
 GlobalTb = True
 
 Mpbh = 100
@@ -53,9 +53,9 @@ else:
     ftag = 'Xe'
 
 fpbh = 1e-8
-zetaUV = 50
+zetaUV = 70
 zetaX = 2e56
-Tmin = 5e4
+Tmin = 1e4
 Nalpha = 4e3
 
 Zpower = 16.690
@@ -72,7 +72,7 @@ def power_spectrum_pull(file, zVal):
 print 'Creating fpbh plot...'
 pl.figure()
 ax = pl.gca()
-filename = test_plots + '/Test_' + ftag + '_fpbh_scan.pdf'
+filename = test_plots + '/Test_' + ftag + '_fpbh_scan_zetaUV_{:.0f}_zetaX_{:.0e}_Tmin_{:.1e}_Nalpha_{:.0e}.pdf'.format(zetaUV, zetaX, Tmin, Nalpha)
 
 fpbhL = [1e-8, 1e-7, 1e-6, 1e-5, 1e-4, 1e-3, 1e-2]
 
@@ -140,7 +140,7 @@ plt.savefig(filename)
 print 'Creating Nalpha plot...'
 pl.figure()
 ax = pl.gca()
-filename = test_plots + '/Test_' + ftag + '_Nalpha_scan.pdf'
+filename = test_plots + '/Test_' + ftag + '_Nalpha_scan_zetaUV_{:.0f}_zetaX_{:.0e}_Tmin_{:.1e}_fpbh_{:.0e}.pdf'.format(zetaUV, zetaX, Tmin, fpbh)
 
 NalphaL = [4e2, 1e3, 4e3, 1e4, 4e4]
 
@@ -207,7 +207,7 @@ plt.savefig(filename)
 print 'Creating Tmin plot...'
 pl.figure()
 ax = pl.gca()
-filename = test_plots + '/Test_' + ftag + '_Tmin_scan.pdf'
+filename = test_plots + '/Test_' + ftag + '_Tmin_scan_zetaUV_{:.0f}_zetaX_{:.0e}_Nalpha_{:.0e}_fpbh_{:.0e}.pdf'.format(zetaUV, zetaX, Nalpha, fpbh)
 
 TminL = [1e4, 2.5e4, 5e4, 7e4, 1e5]
 
@@ -278,7 +278,7 @@ plt.savefig(filename)
 print 'Creating Zeta X plot...'
 pl.figure()
 ax = pl.gca()
-filename = test_plots + '/Test_' + ftag + '_ZetaX_scan.pdf'
+filename = test_plots + '/Test_' + ftag + '_ZetaX_scan_zetaUV_{:.0f}_Tmin_{:.1e}_Nalpha_{:.0e}_fpbh_{:.0e}.pdf'.format(zetaUV, Tmin, Nalpha, fpbh)
 
 zetaXL = [2e55, 7e55, 2e56, 7e56, 2e57]
 
@@ -345,7 +345,7 @@ plt.savefig(filename)
 print 'Creating Zeta UV plot...'
 pl.figure()
 ax = pl.gca()
-filename = test_plots + '/Test_' + ftag + '_ZetaUV_scan.pdf'
+filename = test_plots + '/Test_' + ftag + '_ZetaUV_scan_zetaX_{:.0e}_Tmin_{:.1e}_Nalpha_{:.0e}_fpbh_{:.0e}.pdf'.format(zetaX, Tmin, Nalpha, fpbh)
 
 zetaUVL = [15, 30, 50, 70, 90]
 
