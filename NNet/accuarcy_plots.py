@@ -30,10 +30,11 @@ path = os.getcwd()
 # Set global parameters and init NN
 # Define type of anlaysis to be used and PBH mass
 test_plots = os.getcwd() + '/Test_Plots/'
-tb_analysis = False
-GlobalTb = True
+tb_analysis = True
+GlobalTb = False
 
 Mpbh = 100
+Nhidden = 25
 Zlist = np.linspace(6, 35, 70)
 klist = np.logspace(np.log10(0.05), np.log10(2), 70)
 color_list = ['#9883E5', '#72A1E5', '#50C9CE', '#2E382E',
@@ -42,7 +43,7 @@ color_list = ['#9883E5', '#72A1E5', '#50C9CE', '#2E382E',
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
 # Begin Plot Making
 if tb_analysis:
-    initPBH = Tb_PBH_Nnet(Mpbh, globalTb=GlobalTb)
+    initPBH = Tb_PBH_Nnet(Mpbh, globalTb=GlobalTb, HiddenNodes=Nhidden)
     initPBH.main_nnet()
     ftag = 'Tb'
     if not GlobalTb:
@@ -57,6 +58,7 @@ zetaUV = 70
 zetaX = 2e56
 Tmin = 1e4
 Nalpha = 4e3
+
 
 Zpower = 16.690
 

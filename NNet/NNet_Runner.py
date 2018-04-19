@@ -15,6 +15,7 @@ tb_analysis = True
 GlobalTb = False
 
 epochs = 20000
+HiddenNodes = 25
 
 redshift = 17.57
 fpbh = np.log10(1e-8)
@@ -28,10 +29,10 @@ if not GlobalTb and tb_analysis:
     vec_in = [[k, fpbh, zetaUV, zetaX, Tmin, Nalpha]]
 # Evaluate/Run
 if tb_analysis:
-    init_pbh = Tb_PBH_Nnet(Mpbh, globalTb=GlobalTb, epochs=epochs, zfix=redshift)
+    init_pbh = Tb_PBH_Nnet(Mpbh, globalTb=GlobalTb, HiddenNodes=HiddenNodes, epochs=epochs, zfix=redshift)
     init_pbh.main_nnet()
 else:
-    init_pbh = Xe_PBH_Nnet(Mpbh, epochs=epochs)
+    init_pbh = Xe_PBH_Nnet(Mpbh, epochs=epochs, HiddenNodes=HiddenNodes)
     init_pbh.main_nnet()
 
 if Train:

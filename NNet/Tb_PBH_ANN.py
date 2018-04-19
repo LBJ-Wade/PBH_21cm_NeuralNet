@@ -11,19 +11,18 @@ RANDOM_SEED = 42
 tf.set_random_seed(RANDOM_SEED)
 
 class Tb_PBH_Nnet(object):
-    def __init__(self, mPBH, globalTb=True, epochs=10000, zfix=17.57):
+    def __init__(self, mPBH, globalTb=True, HiddenNodes=25, epochs=10000, zfix=17.57):
         self.mPBH = mPBH
         self.globalTb=globalTb
         self.N_EPOCHS = epochs
         self.zfix = zfix
+        self.h_size = HiddenNodes
         if self.globalTb:
-            self.h_size = 40 # Number of hidden nodes
             self.grad_stepsize = 1e-6
             self.errThresh = 10
             self.dirName = 'MetaGraphs/Tb_PBH_Mass_{:.0e}_Global'.format(self.mPBH)
             self.fileN = self.dirName + '/PBH21cm_Graph_Global_Mpbh_{:.0e}'.format(self.mPBH)
         else:
-            self.h_size = 40 # Number of hidden nodes
             self.grad_stepsize = 1e-6
             self.errThresh = 1.
             self.dirName = 'MetaGraphs/Tb_PBH_Mass_{:.0e}_Power_Zval_{:.2f}'.format(self.mPBH, self.zfix)
