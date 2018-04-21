@@ -34,16 +34,24 @@ tb_analysis = True
 GlobalTb = False
 
 Mpbh = 100
-Nhidden = 25
+Nhidden = 35
 Zlist = np.linspace(6, 35, 70)
 klist = np.logspace(np.log10(0.05), np.log10(2), 70)
 color_list = ['#9883E5', '#72A1E5', '#50C9CE', '#2E382E',
               '#7B1E7A', '#F9564F', '#F3C677', '#44AF69']
+Zpower = 17.57
+
+fpbh = 1e-8
+zetaUV = 50
+zetaX = 2e56
+Tmin = 1e4
+Nalpha = 4e3
+
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
 # Begin Plot Making
 if tb_analysis:
-    initPBH = Tb_PBH_Nnet(Mpbh, globalTb=GlobalTb, HiddenNodes=Nhidden)
+    initPBH = Tb_PBH_Nnet(Mpbh, globalTb=GlobalTb, HiddenNodes=Nhidden, zfix=Zpower)
     initPBH.main_nnet()
     ftag = 'Tb'
     if not GlobalTb:
@@ -52,15 +60,6 @@ else:
     initPBH = Xe_PBH_Nnet(Mpbh)
     initPBH.main_nnet()
     ftag = 'Xe'
-
-fpbh = 1e-8
-zetaUV = 70
-zetaX = 2e56
-Tmin = 1e4
-Nalpha = 4e3
-
-
-Zpower = 16.690
 
 
 def power_spectrum_pull(file, zVal):
@@ -86,7 +85,7 @@ for f in fpbhL:
                             np.log10(zetaX), np.log10(Tmin), np.log10(Nalpha)])
     else:
         for kk in klist:
-            evalVec.append([Zpower, kk, np.log10(f), np.log10(zetaUV),
+            evalVec.append([np.log10(kk), np.log10(f), np.log10(zetaUV),
                             np.log10(zetaX), np.log10(Tmin), np.log10(Nalpha)])
 vals = initPBH.eval_NN(evalVec=evalVec)
 
@@ -96,7 +95,8 @@ for i,f in enumerate(fpbhL):
     yvals = vals[inarray[:, -5] == np.log10(f)]
     xvals = inarray[inarray[:, -5] == np.log10(f)][:,0]
     if tb_analysis and not GlobalTb:
-        xvals = inarray[inarray[:, -5] == np.log10(f)][:,1]
+        xvals = np.power(10, xvals)
+
     yvals = yvals[np.argsort(xvals)]
     xvals.sort()
     
@@ -137,6 +137,7 @@ plt.legend()
 plt.tight_layout()
 plt.savefig(filename)
 
+
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
 # Scan over Nalpha
 print 'Creating Nalpha plot...'
@@ -155,8 +156,8 @@ for na in NalphaL:
 
     else:
         for kk in klist:
-            evalVec.append([Zpower, kk, np.log10(f), np.log10(zetaUV),
-                            np.log10(zetaX), np.log10(Tmin), np.log10(Nalpha)])
+            evalVec.append([np.log10(kk), np.log10(fpbh), np.log10(zetaUV),
+                            np.log10(zetaX), np.log10(Tmin), np.log10(na)])
 vals = initPBH.eval_NN(evalVec=evalVec)
 
 for i,na in enumerate(NalphaL):
@@ -165,7 +166,7 @@ for i,na in enumerate(NalphaL):
     yvals = vals[inarray[:, -1] == np.log10(na)]
     xvals = inarray[inarray[:, -1] == np.log10(na)][:,0]
     if tb_analysis and not GlobalTb:
-        xvals = inarray[inarray[:, -1] == np.log10(f)][:,1]
+        xvals = np.power(10, xvals)
     yvals = yvals[np.argsort(xvals)]
     xvals.sort()
     pl.plot(xvals, yvals, lw=1, color=color_list[i], label=r'$N_\alpha = $'+'{:.1e}'.format(na))
@@ -222,8 +223,8 @@ for tm in TminL:
 
     else:
         for kk in klist:
-            evalVec.append([Zpower, kk, np.log10(f), np.log10(zetaUV),
-                            np.log10(zetaX), np.log10(Tmin), np.log10(Nalpha)])
+            evalVec.append([np.log10(kk), np.log10(fpbh), np.log10(zetaUV),
+                            np.log10(zetaX), np.log10(tm), np.log10(Nalpha)])
 vals = initPBH.eval_NN(evalVec=evalVec)
 
 
@@ -233,7 +234,7 @@ for i,tm in enumerate(TminL):
     yvals = vals[inarray[:, -2] == np.log10(tm)]
     xvals = inarray[inarray[:, -2] == np.log10(tm)][:,0]
     if tb_analysis and not GlobalTb:
-        xvals = inarray[inarray[:, -2] == np.log10(f)][:,1]
+        xvals = np.power(10, xvals)
     yvals = yvals[np.argsort(xvals)]
     xvals.sort()
     pl.plot(xvals, yvals, lw=1, color=color_list[i], label=r'$T^{vir}_{min} = $'+'{:.1e}'.format(tm))
@@ -293,8 +294,8 @@ for zx in zetaXL:
 
     else:
         for kk in klist:
-            evalVec.append([Zpower, kk, np.log10(f), np.log10(zetaUV),
-                            np.log10(zetaX), np.log10(Tmin), np.log10(Nalpha)])
+            evalVec.append([np.log10(kk), np.log10(fpbh), np.log10(zetaUV),
+                            np.log10(zx), np.log10(Tmin), np.log10(Nalpha)])
 vals = initPBH.eval_NN(evalVec=evalVec)
 
 for i,zx in enumerate(zetaXL):
@@ -303,7 +304,7 @@ for i,zx in enumerate(zetaXL):
     yvals = vals[inarray[:, -3] == np.log10(zx)]
     xvals = inarray[inarray[:, -3] == np.log10(zx)][:,0]
     if tb_analysis and not GlobalTb:
-        xvals = inarray[inarray[:, -3] == np.log10(f)][:,1]
+        xvals = np.power(10, xvals)
     yvals = yvals[np.argsort(xvals)]
     xvals.sort()
     pl.plot(xvals, yvals, lw=1, color=color_list[i], label=r'$\zeta_{X} = $'+'{:.1e}'.format(zx))
@@ -360,7 +361,7 @@ for zuv in zetaUVL:
 
     else:
         for kk in klist:
-            evalVec.append([Zpower, kk, np.log10(f), np.log10(zetaUV),
+            evalVec.append([np.log10(kk), np.log10(fpbh), np.log10(zuv),
                             np.log10(zetaX), np.log10(Tmin), np.log10(Nalpha)])
 vals = initPBH.eval_NN(evalVec=evalVec)
 
@@ -370,7 +371,7 @@ for i,zuv in enumerate(zetaUVL):
     yvals = vals[inarray[:, -4] == np.log10(zuv)]
     xvals = inarray[inarray[:, -4] == np.log10(zuv)][:,0]
     if tb_analysis and not GlobalTb:
-        xvals = inarray[inarray[:, -4] == np.log10(f)][:,1]
+        xvals = np.power(10, xvals)
     yvals = yvals[np.argsort(xvals)]
     xvals.sort()
     pl.plot(xvals, yvals, lw=1, color=color_list[i], label=r'$\zeta_{UV} = $'+'{:.0f}'.format(zuv))
