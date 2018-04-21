@@ -10,9 +10,9 @@ RANDOM_SEED = 42
 tf.set_random_seed(RANDOM_SEED)
 
 class Xe_PBH_Nnet(object):
-    def __init__(self, mPBH, epochs=10000):
+    def __init__(self, mPBH, epochs=10000, HiddenNodes=30):
         self.mPBH = mPBH
-        self.h_size = 30               # Number of hidden nodes
+        self.h_size = HiddenNodes
         self.errThresh = 10
         self.N_EPOCHS = epochs
         self.grad_stepsize = 1e-3
