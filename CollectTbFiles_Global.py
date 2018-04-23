@@ -40,8 +40,15 @@ for dty in dirs:
         zzList = []
         tbList = []
         for ff in subfiles:
-            zz = float(ff[ff.find('/RedShift_')+10:ff.find('_ps_no_halos')])
-            tb = float(ff[ff.find('aveTb')+5:ff.find('_Pop2')])
+            zendV = ff.find('_ps_no_halos')
+            if zendV == -1:
+                zendV = ff.find('_PS_mk_')
+            try:
+                zz = float(ff[ff.find('/RedShift_')+10:zendV])
+                tb = float(ff[ff.find('aveTb')+5:ff.find('_Pop2')])
+            except ValueError:
+                continue
+                
             fullListFile.append([zz, np.log10(fpbh), np.log10(zetaUV), np.log10(zetaX), np.log10(tmin), np.log10(nAlpha),  tb])
             zzList.append(zz)
             tbList.append(tb)

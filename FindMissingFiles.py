@@ -2,7 +2,7 @@ import os
 import numpy
 import glob
 
-Mpbh=100
+Mpbh=1
 
 path = os.getcwd()
 tbfiles = glob.glob('PS_Files/PS_Files_Mpbh_{:.1e}*'.format(Mpbh))
@@ -11,7 +11,7 @@ chiUV = [15, 30, 50, 90]
 chiX = [2e55, 2e56, 2e57]
 Tmin = [1e4, 5e4, 1e5]
 Nalph = [4e2, 4e3, 4e4]
-fpbh = [1e-8, 1e-6, 1e-4, 1e-2]
+fpbh = [1e-6, 1e-4, 1e-2, 1]
 
 masterL = []
 missingL = []

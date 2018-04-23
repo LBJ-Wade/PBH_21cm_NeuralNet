@@ -40,7 +40,6 @@ for dty in dirs:
         xeList = []
         for ff in subfiles:
             zz = float(ff[ff.find('/RedShift_')+10:ff.find('_ps_no_halos')])
-
         
             xe = float(ff[ff.find('_nf')+3:ff.find('_useTs1_')])
             xeval = (1. - xe)*xefactor
