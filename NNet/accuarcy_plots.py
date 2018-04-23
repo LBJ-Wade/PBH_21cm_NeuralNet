@@ -30,11 +30,15 @@ path = os.getcwd()
 # Set global parameters and init NN
 # Define type of anlaysis to be used and PBH mass
 test_plots = os.getcwd() + '/Test_Plots/'
+
+# DEFINE ANALYSIS
 tb_analysis = True
 GlobalTb = False
+######
 
 Mpbh = 100
-Nhidden = 35
+Nhidden = 60
+
 Zlist = np.linspace(6, 35, 70)
 klist = np.logspace(np.log10(0.05), np.log10(2), 70)
 color_list = ['#9883E5', '#72A1E5', '#50C9CE', '#2E382E',
@@ -43,7 +47,7 @@ Zpower = 17.57
 
 fpbh = 1e-8
 zetaUV = 50
-zetaX = 2e56
+zetaX = 2e57
 Tmin = 1e4
 Nalpha = 4e3
 
@@ -240,14 +244,11 @@ for i,tm in enumerate(TminL):
     pl.plot(xvals, yvals, lw=1, color=color_list[i], label=r'$T^{vir}_{min} = $'+'{:.1e}'.format(tm))
     if tb_analysis:
         if GlobalTb:
-            tbfile = '../TbFiles/tb_file_mpbh_{:.0e}_fpbh_{:.0e}_zetaUV_{:.0f}_\
-                      zetaX_{:.0e}_Tmin_{:.1e}_Nalpha_{:.0e}.dat'.format(Mpbh,fpbh,zetaUV,zetaX,tm,Nalpha)
+            tbfile = '../TbFiles/tb_file_mpbh_{:.0e}_fpbh_{:.0e}_zetaUV_{:.0f}_zetaX_{:.0e}_Tmin_{:.1e}_Nalpha_{:.0e}.dat'.format(Mpbh,fpbh,zetaUV,zetaX,tm,Nalpha)
         else:
-            tbfile = '../TbFiles/tb_PowerSpectrum_mpbh_{:.0e}_fpbh_{:.0e}_zetaUV_{:.0f}_\
-                     zetaX_{:.0e}_Tmin_{:.1e}_Nalpha_{:.0e}.dat'.format(Mpbh,fpbh,zetaUV,zetaX,tm,Nalpha)
+            tbfile = '../TbFiles/tb_PowerSpectrum_mpbh_{:.0e}_fpbh_{:.0e}_zetaUV_{:.0f}_zetaX_{:.0e}_Tmin_{:.1e}_Nalpha_{:.0e}.dat'.format(Mpbh,fpbh,zetaUV,zetaX,tm,Nalpha)
     else:
-        tbfile = '../XeFiles/xe_file_mpbh_{:.0e}_fpbh_{:.0e}_zetaUV_{:.0f}_zetaX_{:.0e}_\
-                 Tmin_{:.1e}_Nalpha_{:.0e}.dat'.format(Mpbh,fpbh,zetaUV,zetaX,tm,Nalpha)
+        tbfile = '../XeFiles/xe_file_mpbh_{:.0e}_fpbh_{:.0e}_zetaUV_{:.0f}_zetaX_{:.0e}_Tmin_{:.1e}_Nalpha_{:.0e}.dat'.format(Mpbh,fpbh,zetaUV,zetaX,tm,Nalpha)
     if os.path.exists(tbfile):
         if not tb_analysis or GlobalTb:
             sim_data = np.loadtxt(tbfile)

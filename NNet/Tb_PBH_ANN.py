@@ -23,8 +23,8 @@ class Tb_PBH_Nnet(object):
             self.dirName = 'MetaGraphs/Tb_PBH_Mass_{:.0e}_Global'.format(self.mPBH)
             self.fileN = self.dirName + '/PBH21cm_Graph_Global_Mpbh_{:.0e}'.format(self.mPBH)
         else:
-            self.grad_stepsize = 1e-6
-            self.errThresh = 1.
+            self.grad_stepsize = 1e-5
+            self.errThresh = 0.
             self.dirName = 'MetaGraphs/Tb_PBH_Mass_{:.0e}_Power_Zval_{:.2f}'.format(self.mPBH, self.zfix)
             self.fileN = self.dirName + '/PBH21cm_Graph_Power_Mpbh_{:.0e}_Zval_{:.2f}'.format(self.mPBH, self.zfix)
 
@@ -58,6 +58,10 @@ class Tb_PBH_Nnet(object):
         np.random.shuffle(tbVals)
         data = tbVals[:, :inputN]
         target = tbVals[:, inputN:]
+        
+        if not self.globalTb:
+            target = np.log10(target)
+        
         dataSTD = self.scalar.fit_transform(data)
     
         self.train_size = (1.-frac_test)*len(tbVals[:,0])
@@ -66,7 +70,7 @@ class Tb_PBH_Nnet(object):
         N, M  = data.shape
         all_X = np.ones((N, M + 1))
         all_X[:, 1:] = dataSTD
-        
+
         return train_test_split(all_X, target, test_size=frac_test, random_state=RANDOM_SEED)
 
     def main_nnet(self):#, train_nnet=True, eval_nnet=False, evalVec=[], keep_training=False):
@@ -103,13 +107,19 @@ class Tb_PBH_Nnet(object):
         
 
         # Backward propagation
-        self.cost = tf.reduce_sum(tf.square((self.y - self.yhat), name="cost"))
+        if self.globalTb:
+            self.cost = tf.reduce_sum(tf.square((self.y - self.yhat), name="cost"))
+            # Error Check
+            self.perr_train = tf.reduce_sum(tf.abs((self.y - self.yhat)/self.err_train))
+            self.perr_test = tf.reduce_sum(tf.abs((self.y - self.yhat)/self.err_test))
+        else:
+            self.cost = tf.reduce_sum(tf.square((self.y - self.yhat), name="cost"))
+            # Error Check
+            self.perr_train = tf.reduce_sum(tf.abs((10.**self.y - 10.**self.yhat)/10.**self.err_train))
+            self.perr_test = tf.reduce_sum(tf.abs((10.**self.y - 10.**self.yhat)/10.**self.err_test))
+        
         self.updates = tf.train.GradientDescentOptimizer(self.grad_stepsize).minimize(self.cost)
         
-        # Error Check
-        self.perr_train = tf.reduce_sum(tf.abs((self.y - self.yhat)/self.err_train))
-        self.perr_test = tf.reduce_sum(tf.abs((self.y - self.yhat)/self.err_test))
-
         self.saveNN = tf.train.Saver()
 
         return
@@ -145,6 +155,8 @@ class Tb_PBH_Nnet(object):
             saverMeta = tf.train.import_meta_graph(self.fileN + '.meta')
             self.saveNN.restore(sess, self.fileN)
             predictions = sess.run(self.yhat, feed_dict={self.X: np.insert(self.scalar.transform(evalVec), 0, 1., axis=1)})
+            if not self.globalTb:
+                return np.power(10, predictions)
         return predictions
 
 

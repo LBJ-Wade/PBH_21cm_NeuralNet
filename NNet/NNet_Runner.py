@@ -14,8 +14,8 @@ Eval = False
 tb_analysis = True
 GlobalTb = False
 
-epochs = 20000
-HiddenNodes = 25
+epochs = 100000
+HiddenNodes = 60 # 35 for everything but power
 
 redshift = 17.57
 fpbh = np.log10(1e-8)
