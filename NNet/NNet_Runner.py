@@ -15,7 +15,7 @@ tb_analysis = True
 GlobalTb = False
 
 epochs = 100000
-HiddenNodes = 35
+HiddenNodes = 50
 
 redshift = 17.57
 fpbh = np.log10(1e-8)
