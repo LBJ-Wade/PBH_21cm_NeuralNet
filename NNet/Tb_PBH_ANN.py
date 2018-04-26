@@ -108,7 +108,7 @@ class Tb_PBH_Nnet(object):
         
 
         # Backward propagation
-<<<<<<< HEAD
+
         if self.globalTb:
             self.cost = tf.reduce_sum(tf.square((self.y - self.yhat), name="cost"))
             # Error Check
