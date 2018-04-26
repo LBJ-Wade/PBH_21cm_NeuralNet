@@ -19,12 +19,14 @@ class Tb_PBH_Nnet(object):
         self.h_size = HiddenNodes
         if self.globalTb:
             self.grad_stepsize = 1e-6
+
             self.errThresh = 10
             self.dirName = 'MetaGraphs/Tb_PBH_Mass_{:.0e}_Global'.format(self.mPBH)
             self.fileN = self.dirName + '/PBH21cm_Graph_Global_Mpbh_{:.0e}'.format(self.mPBH)
         else:
             self.grad_stepsize = 1e-5
             self.errThresh = 0.
+
             self.dirName = 'MetaGraphs/Tb_PBH_Mass_{:.0e}_Power_Zval_{:.2f}'.format(self.mPBH, self.zfix)
             self.fileN = self.dirName + '/PBH21cm_Graph_Power_Mpbh_{:.0e}_Zval_{:.2f}'.format(self.mPBH, self.zfix)
 
@@ -58,10 +60,9 @@ class Tb_PBH_Nnet(object):
         np.random.shuffle(tbVals)
         data = tbVals[:, :inputN]
         target = tbVals[:, inputN:]
-        
         if not self.globalTb:
             target = np.log10(target)
-        
+
         dataSTD = self.scalar.fit_transform(data)
     
         self.train_size = (1.-frac_test)*len(tbVals[:,0])
@@ -107,6 +108,7 @@ class Tb_PBH_Nnet(object):
         
 
         # Backward propagation
+<<<<<<< HEAD
         if self.globalTb:
             self.cost = tf.reduce_sum(tf.square((self.y - self.yhat), name="cost"))
             # Error Check
@@ -157,6 +159,7 @@ class Tb_PBH_Nnet(object):
             predictions = sess.run(self.yhat, feed_dict={self.X: np.insert(self.scalar.transform(evalVec), 0, 1., axis=1)})
             if not self.globalTb:
                 return np.power(10, predictions)
+
         return predictions
 
 
