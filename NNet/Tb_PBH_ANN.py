@@ -159,9 +159,15 @@ class Tb_PBH_Nnet(object):
             predictions = sess.run(self.yhat, feed_dict={self.X: np.insert(self.scalar.transform(evalVec), 0, 1., axis=1)})
             if not self.globalTb:
                 return np.power(10, predictions)
-
         return predictions
 
+    def solo_eval(self, evalVec):
+        with tf.Session() as sess:
+            sess.run(tf.global_variables_initializer())
+            predictions = sess.run(self.yhat, feed_dict={self.X: np.insert(self.scalar.transform(evalVec), 0, 1., axis=1)})
+            if not self.globalTb:
+                return np.power(10, predictions)
+        return predictions
 
 
 
