@@ -6,3 +6,9 @@ Fix_UV_X_ps.py
 NNet/.DS_Store
 *.pyc
 NNet/Test_Plots/*
+.ipynb_checkpoi*
+GenericPlotFiles/*
+Plots.nb
+Recfast/*
+NNet/MetaGraphs/*
+*~
