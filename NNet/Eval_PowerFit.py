@@ -53,6 +53,9 @@ for fp in fpbh_L:
                     chi2 = 0.
                     param_list.append([fp, zUV, zX, Tm, Na])
                     for j,zz in enumerate(Z_list):
+                        initPBH = Tb_PBH_Nnet(Mpbh, globalTb=GlobalTb, HiddenNodes=Nhidden, zfix=zz)
+                        initPBH.main_nnet()
+                        initPBH.load_matrix_elems()
                         t0 = time.time()
                         eval_list = []
                         for i,kk in enumerate(k_List):
