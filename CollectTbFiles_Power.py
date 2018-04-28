@@ -49,7 +49,8 @@ for Zfix in Z_list:
                 appendFull = False
                 if os.path.isfile('TbFiles/tb_PowerSpectrum_mpbh_{:.0e}_fpbh_{:.0e}_zetaUV_{:.0f}_zetaX_{:.0e}_Tmin_{:.1e}_Nalpha_{:.0e}.dat'.format(mpbh,fpbh,zetaUV,
                     zetaX,tmin,nAlpha)):
-                    continue
+                    #continue
+                    pass
             else:
                 appendFull = True
             for j in range(len(vals[:,0])):

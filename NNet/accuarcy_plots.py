@@ -37,18 +37,18 @@ GlobalTb = False
 ######
 
 Mpbh = 100
-Nhidden = 40
+Nhidden = 50
 
 Zlist = np.linspace(6, 35, 70)
 klist = np.logspace(np.log10(0.05), np.log10(2), 70)
 color_list = ['#9883E5', '#72A1E5', '#50C9CE', '#2E382E',
               '#7B1E7A', '#F9564F', '#F3C677', '#44AF69']
-Zpower = 17.57
+Zpower = 8.38
 
-fpbh = 1e-8
-zetaUV = 50
-zetaX = 2e56
-Tmin = 1e4
+fpbh = 1e-4
+zetaUV = 90
+zetaX = 2e55
+Tmin = 5e4
 Nalpha = 4e3
 
 
@@ -61,15 +61,19 @@ if tb_analysis:
     if not GlobalTb:
         ftag += '_Power_'
 else:
-    initPBH = Xe_PBH_Nnet(Mpbh)
+    initPBH = Xe_PBH_Nnet(Mpbh,HiddenNodes=Nhidden)
     initPBH.main_nnet()
     ftag = 'Xe'
 
 
 def power_spectrum_pull(file, zVal):
     data = np.loadtxt(file)
+    #print zVal
+    #print data
     indxs = np.isclose(data[:,0], zVal, atol=1e-2)
     data = data[indxs]
+    #print data
+    #exit()
     return np.column_stack((data[:,1], data[:,2]))
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
@@ -131,7 +135,7 @@ if tb_analysis:
         ax.set_yscale('log')
         ax.set_xscale('log')
         plt.xlim([0.05, 2.])
-        plt.ylim([1, 4e3])
+        plt.ylim([0.1, 4e3])
         ax.set_xlabel(r'k', fontsize=fs)
 else:
     ax.set_ylabel(r'$x_e$', fontsize=fs)
@@ -199,7 +203,7 @@ if tb_analysis:
         ax.set_yscale('log')
         ax.set_xscale('log')
         plt.xlim([0.05, 2.])
-        plt.ylim([1, 4e3])
+        plt.ylim([0.1, 4e3])
         ax.set_xlabel(r'k', fontsize=fs)
 else:
     ax.set_ylabel(r'$x_e$', fontsize=fs)
@@ -267,7 +271,7 @@ if tb_analysis:
         ax.set_yscale('log')
         ax.set_xscale('log')
         plt.xlim([0.05, 2.])
-        plt.ylim([1, 4e3])
+        plt.ylim([0.1, 4e3])
         ax.set_xlabel(r'k', fontsize=fs)
 else:
     ax.set_ylabel(r'$x_e$', fontsize=fs)
@@ -334,7 +338,7 @@ if tb_analysis:
         ax.set_yscale('log')
         ax.set_xscale('log')
         plt.xlim([0.05, 2.])
-        plt.ylim([1, 4e3])
+        plt.ylim([0.1, 4e3])
         ax.set_xlabel(r'k', fontsize=fs)
 else:
     ax.set_ylabel(r'$x_e$', fontsize=fs)
@@ -401,7 +405,7 @@ if tb_analysis:
         ax.set_yscale('log')
         ax.set_xscale('log')
         plt.xlim([0.05, 2.])
-        plt.ylim([1, 4e3])
+        plt.ylim([0.1, 4e3])
         ax.set_xlabel(r'k', fontsize=fs)
 else:
     ax.set_ylabel(r'$x_e$', fontsize=fs)

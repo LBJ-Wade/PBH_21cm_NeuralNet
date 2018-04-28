@@ -24,6 +24,8 @@ k_List = np.logspace(0.1, 2, Pts_perVar)
 #          14.28, 15.05, 15.85, 16.69, 17.57, 18.50, 19.48]
 Z_list = [17.57]
 
+totalParmas = Pts_perVar**5
+cnt = 0
 
 chi2_list = []
 param_list = []
@@ -49,6 +51,9 @@ for fp in fpbh_L:
                         trueV = initPBH.solo_eval(true_list)
                         chi2 += np.sum(((val - trueV) / error)**2.)
                     print param_list[-1], chi2
+                    cnt +=1
+                    if cnt%100 == 0:
+                        print 'Finished Run: {:.0f}/{:.0f}'.format(cnt, totalParmas)
                     chi2_list.append(chi2)
 
 chi2_list = np.asarray(chi2_list)
