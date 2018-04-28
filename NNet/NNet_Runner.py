@@ -17,8 +17,10 @@ GlobalTb = False
 epochs = 100000
 HiddenNodes = 60
 
-
 redshift = 17.57
+#Z_list = [8.38, 8.85, 9.34, 9.86, 10.40, 10.97, 11.57, 12.20, 12.86, 13.55,
+#          14.28, 15.05, 15.85, 16.69, 17.57, 18.50, 19.48]
+
 fpbh = np.log10(1e-8)
 zetaUV = np.log10(50)
 zetaX = np.log10(2e56)

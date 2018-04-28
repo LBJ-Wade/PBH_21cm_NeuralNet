@@ -13,7 +13,7 @@ GlobalTb = True
 Mpbh = 100
 Nhidden = 50
 
-Pts_perVar = 3
+Pts_perVar = 20
 fpbh_L = np.logspace(-7, -2, Pts_perVar)
 zetaUV_L = np.linspace(15, 90, Pts_perVar)
 zetaX_L = np.logspace(np.log10(2e55), np.log10(2e57), Pts_perVar)
@@ -58,7 +58,7 @@ for fp in fpbh_L:
 
 chi2_list = np.asarray(chi2_list)
 param_list = np.asarray(param_list)
-np.savetxt('../Sensitivities/Chi2_Fits_' + arrayName + '_TbPower_Mpbh_{:.0f}_ModerateSense.dat', np.column_stack((param_list, chi2_list)))
+np.savetxt('../Sensitivities/Chi2_Fits_' + arrayName + '_TbPower_Mpbh_{:.0f}_ModerateSense.dat'.format(Mpbh), np.column_stack((param_list, chi2_list)))
 
 
 
