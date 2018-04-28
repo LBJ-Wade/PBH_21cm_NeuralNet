@@ -12,6 +12,7 @@ tf.set_random_seed(RANDOM_SEED)
 
 class Tb_PBH_Nnet(object):
     def __init__(self, mPBH, globalTb=True, HiddenNodes=25, epochs=10000, zfix=17.57):
+        tf.reset_default_graph()
         self.mPBH = mPBH
         self.globalTb=globalTb
         self.N_EPOCHS = epochs
@@ -99,12 +100,12 @@ class Tb_PBH_Nnet(object):
         self.y = tf.placeholder("float", shape=[None, self.y_size])
 
         # Weight initializations
-        w_1 = self.init_weights((self.x_size, self.h_size))
-        w_2 = self.init_weights((self.h_size, self.h_size))
-        w_3 = self.init_weights((self.h_size, self.y_size))
+        self.w_1 = self.init_weights((self.x_size, self.h_size))
+        self.w_2 = self.init_weights((self.h_size, self.h_size))
+        self.w_3 = self.init_weights((self.h_size, self.y_size))
 
         # Forward propagation
-        self.yhat = self.forwardprop(self.X, w_1, w_2, w_3)
+        self.yhat = self.forwardprop(self.X, self.w_1, self.w_2, self.w_3)
         
 
         # Backward propagation
@@ -161,13 +162,23 @@ class Tb_PBH_Nnet(object):
                 return np.power(10, predictions)
         return predictions
 
-    def solo_eval(self, evalVec):
+    def load_matrix_elems(self):
         with tf.Session() as sess:
-            sess.run(tf.global_variables_initializer())
-            predictions = sess.run(self.yhat, feed_dict={self.X: np.insert(self.scalar.transform(evalVec), 0, 1., axis=1)})
-            if not self.globalTb:
+            self.saveNN.restore(sess, self.fileN)
+            self.Matrix1 = sess.run(self.w_1)
+            self.Matrix2 = sess.run(self.w_2)
+            self.Matrix3 = sess.run(self.w_3)
+        return
+
+    def rapid_eval(self, evalVec):
+        inputV = np.insert(self.scalar.transform(evalVec), 0, 1., axis=1)
+        h1 = self.sigmoid(np.matmul(inputV, self.Matrix1))
+        h2 = self.sigmoid(np.matmul(h1, self.Matrix2))
+        predictions = np.matmul(h2, self.Matrix3)
+        
+        if not self.globalTb:
                 return np.power(10, predictions)
         return predictions
 
-
-
+    def sigmoid(self, x):
+        return 1/(1+np.exp(-x))
