@@ -154,7 +154,6 @@ class Tb_PBH_Nnet(object):
 
     def eval_NN(self, evalVec):
         with tf.Session() as sess:
-            #sess.run(tf.global_variables_initializer())
             saverMeta = tf.train.import_meta_graph(self.fileN + '.meta')
             self.saveNN.restore(sess, self.fileN)
             predictions = sess.run(self.yhat, feed_dict={self.X: np.insert(self.scalar.transform(evalVec), 0, 1., axis=1)})

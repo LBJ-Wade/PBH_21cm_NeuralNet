@@ -24,6 +24,8 @@ Mpbh = 100
 ln_fpbhMAX = -2
 Nhidden = 50
 BurnPTS = 50
+NSTEPS = 1000
+ndim, nwalkers = 5, 500
 
 filePTS = 'mcmc_pts/MCMC_pts_Mpbh_{:.0f}_'.format(Mpbh)+arrayName+'_.dat'
 scterPlt = 'mcmc_pts/MCMC_PLT_Mpbh_{:.0f}_'.format(Mpbh)+arrayName+'_.pdf'
@@ -76,11 +78,9 @@ def lnprob(theta):
         return -np.inf
     return lp + ln_like(theta)
 
-ndim, nwalkers = 5, 1000
 pos = [init_params + 1e-2*np.random.randn(ndim) for i in range(nwalkers)]
 
 sampler = emcee.EnsembleSampler(nwalkers, ndim, lnprob)
-NSTEPS = 1000
 sampler.run_mcmc(pos, NSTEPS)
 
 print 'Making burn-in plot...'

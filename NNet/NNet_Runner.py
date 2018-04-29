@@ -11,11 +11,11 @@ KeepTraining = False
 # Load and Evaluate NNet
 Eval = False
 #Global Tb or power spectrum, or Xe NN
-tb_analysis = True
+tb_analysis = False
 GlobalTb = False
 
 epochs = 100000
-HiddenNodes = 60
+HiddenNodes = 50
 
 redshift = 17.57
 #Z_list = [8.38, 8.85, 9.34, 9.86, 10.40, 10.97, 11.57, 12.20, 12.86, 13.55,

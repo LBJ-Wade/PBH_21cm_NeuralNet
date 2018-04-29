@@ -11,15 +11,16 @@ tf.set_random_seed(RANDOM_SEED)
 
 class Xe_PBH_Nnet(object):
     def __init__(self, mPBH, epochs=10000, HiddenNodes=30):
+        tf.reset_default_graph()
         self.mPBH = mPBH
         self.h_size = HiddenNodes
-        self.errThresh = 10
+        
         self.N_EPOCHS = epochs
         self.grad_stepsize = 1e-3
        
         self.dirName = 'MetaGraphs/Xe_PBH_Mass_{:.0e}_Power'.format(self.mPBH)
         self.fileN = self.dirName + '/PBH21cm_Graph_Mpbh_{:.0e}'.format(self.mPBH)
-        self.errThresh = 0.05
+        self.errThresh = -1.
         if not os.path.exists(self.dirName):
             os.mkdir(self.dirName)
     
@@ -47,6 +48,7 @@ class Xe_PBH_Nnet(object):
         np.random.shuffle(tbVals)
         data = tbVals[:, :inputN]
         target = tbVals[:, inputN:]
+        target = np.log10(target)
         dataSTD = self.scalar.fit_transform(data)
     
         self.train_size = (1.-frac_test)*len(tbVals[:,0])
@@ -83,21 +85,22 @@ class Xe_PBH_Nnet(object):
         self.y = tf.placeholder("float", shape=[None, self.y_size])
 
         # Weight initializations
-        w_1 = self.init_weights((self.x_size, self.h_size))
-        w_2 = self.init_weights((self.h_size, self.h_size))
-        w_3 = self.init_weights((self.h_size, self.y_size))
+        self.w_1 = self.init_weights((self.x_size, self.h_size))
+        self.w_2 = self.init_weights((self.h_size, self.h_size))
+        self.w_3 = self.init_weights((self.h_size, self.y_size))
 
         # Forward propagation
-        self.yhat = self.forwardprop(self.X, w_1, w_2, w_3)
-        
+        self.yhat = self.forwardprop(self.X, self.w_1, self.w_2, self.w_3)
 
         # Backward propagation
         self.cost = tf.reduce_sum(tf.square((self.y - self.yhat), name="cost"))
         self.updates = tf.train.GradientDescentOptimizer(self.grad_stepsize).minimize(self.cost)
         
         # Error Check
-        self.perr_train = tf.reduce_sum(tf.abs((self.y - self.yhat)/self.err_train))
-        self.perr_test = tf.reduce_sum(tf.abs((self.y - self.yhat)/self.err_test))
+#        self.perr_train = tf.reduce_sum(tf.abs((self.y - self.yhat)/self.err_train))
+#        self.perr_test = tf.reduce_sum(tf.abs((self.y - self.yhat)/self.err_test))
+        self.perr_train = tf.reduce_sum(tf.abs((10.**self.y - 10.**self.yhat)/10.**self.err_train))
+        self.perr_test = tf.reduce_sum(tf.abs((10.**self.y - 10.**self.yhat)/10.**self.err_test))
 
         self.saveNN_Xe = tf.train.Saver()
 
@@ -135,8 +138,23 @@ class Xe_PBH_Nnet(object):
             self.saveNN_Xe.restore(sess, self.fileN)
             predictions = sess.run(self.yhat, feed_dict={self.X: np.insert(self.scalar.transform(evalVec), 0, 1., axis=1)})
         
-        return predictions
+        return np.power(10, predictions)
 
+    def load_matrix_elems(self):
+        with tf.Session() as sess:
+            self.saveNN_Xe.restore(sess, self.fileN)
+            self.Matrix1 = sess.run(self.w_1)
+            self.Matrix2 = sess.run(self.w_2)
+            self.Matrix3 = sess.run(self.w_3)
+        return
 
+    def rapid_eval(self, evalVec):
+        inputV = np.insert(self.scalar.transform(evalVec), 0, 1., axis=1)
+        h1 = self.sigmoid(np.matmul(inputV, self.Matrix1))
+        h2 = self.sigmoid(np.matmul(h1, self.Matrix2))
+        predictions = np.matmul(h2, self.Matrix3)
+        return np.power(10, predictions)
 
+    def sigmoid(self, x):
+        return 1/(1+np.exp(-x))
 
