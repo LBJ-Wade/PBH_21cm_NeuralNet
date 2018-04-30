@@ -4,6 +4,7 @@ from scipy.interpolate import interp2d
 from Tb_PBH_ANN import *
 import time
 import itertools
+from ImportGraph import *
 
 arrayName = 'hera127'
 arrayErr = np.loadtxt('../Sensitivities/NoiseVals_'+arrayName+'.dat')
@@ -32,6 +33,8 @@ cnt = 0
 chi2_list = []
 param_list = []
 
+modeler = np.zeros(len(Z_list), dtype=object)
+
 error = np.zeros((len(Z_list), len(k_List)))
 true_list = np.zeros((len(Z_list), len(k_List)))
 for j,zz in enumerate(Z_list):
@@ -45,6 +48,7 @@ for j,zz in enumerate(Z_list):
     true_list[j,:] = list(itertools.chain.from_iterable(initPBH.rapid_eval(vechold)))
     error[j,:] = np.sqrt(error[j,:]**2. + (0.3*true_list[j,:])**2.)
 
+    modeler[j] = ImportGraph(initPBH.fileN, Mpbh, zz)
 
 for fp in fpbh_L:
     for zUV in zetaUV_L:
@@ -54,14 +58,16 @@ for fp in fpbh_L:
                     chi2 = 0.
                     param_list.append([fp, zUV, zX, Tm, Na])
                     for j,zz in enumerate(Z_list):
-                        initPBH = Tb_PBH_Nnet(Mpbh, globalTb=GlobalTb, HiddenNodes=Nhidden, zfix=zz)
-                        initPBH.main_nnet()
-                        initPBH.load_matrix_elems()
+#                        initPBH = Tb_PBH_Nnet(Mpbh, globalTb=GlobalTb, HiddenNodes=Nhidden, zfix=zz)
+#                        initPBH.main_nnet()
+#                        initPBH.load_matrix_elems()
                         t0 = time.time()
                         eval_list = []
                         for i,kk in enumerate(k_List):
                             eval_list.append([np.log10(kk), np.log10(fp), np.log10(zUV), np.log10(zX), np.log10(Tm), np.log10(Na)])
-                        val = initPBH.rapid_eval(eval_list)
+#                        val = initPBH.rapid_eval(eval_list)
+                        val = modeler[j].run_yhat(eval_list)
+                        
                         chi2 += np.sum(((val.flatten() - true_list[j,:]) / error[j,:])**2.)
                         t1 = time.time()
                         print zz, np.sum(((val.flatten() - true_list[j,:]) / error[j,:])**2.)
