@@ -96,7 +96,7 @@ class Tb_PBH_Nnet(object):
         self.y_size = self.train_y.shape[1]   # Value of Tb
 
         # Symbols
-        self.X = tf.placeholder("float", shape=[None, self.x_size])
+        self.X = tf.placeholder("float", shape=[None, self.x_size], name='X')
         self.y = tf.placeholder("float", shape=[None, self.y_size])
 
         # Weight initializations
@@ -107,7 +107,7 @@ class Tb_PBH_Nnet(object):
         # Forward propagation
         self.yhat = self.forwardprop(self.X, self.w_1, self.w_2, self.w_3)
         
-
+        tf.add_to_collection("activation", self.yhat)
         # Backward propagation
 
         if self.globalTb:
