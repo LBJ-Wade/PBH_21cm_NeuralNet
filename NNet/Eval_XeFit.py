@@ -10,13 +10,12 @@ Nhidden = 50
 
 xefactor = 1.07942599999999
 
-Pts_perVar = 2
+Pts_perVar = 10
 fpbh_L = np.logspace(-7, -2, Pts_perVar)
 zetaUV_L = np.linspace(15, 90, Pts_perVar)
 zetaX_L = np.logspace(np.log10(2e55), np.log10(2e57), Pts_perVar)
 Tmin_L = np.logspace(4, 5, Pts_perVar)
 Nalpha_L = np.logspace(np.log10(4e2), np.log10(4e4), Pts_perVar)
-k_List = np.logspace(np.log10(0.1), np.log10(2), Pts_perVar)
 Z_list = np.linspace(6, 30, 200)
 
 totalParmas = Pts_perVar**5
@@ -27,6 +26,10 @@ for fp in fpbh_L:
         for zX in zetaX_L:
             for Tm in Tmin_L:
                 for Na in Nalpha_L:
+                    fileN = 'nn_xe_files/XeHistory_Mpbh_{:.0e}_fpbh_{:.1e}_zetaUV_{:.2e}_zetaX_{:.2e}_Tmin_{:.2e}_Nalpha_{:.2e}.dat'.format(Mpbh,fp,zUV,zX,Tm,Na)
+                    if os.path.isfile(fileN):
+                        cnt +=1
+                        continue
                     initPBH = initPBH = Xe_PBH_Nnet(Mpbh,HiddenNodes=Nhidden)
                     initPBH.main_nnet()
                     initPBH.load_matrix_elems()
@@ -40,7 +43,7 @@ for fp in fpbh_L:
                     maxZ = np.argmax(val)
                     val[:maxZ] = val[maxZ]
                     sve_info = np.column_stack((Z_list, val))
-                    fileN = 'nn_xe_files/XeHistory_Mpbh_{:.0e}_fpbh_{:.1e}_zetaUV_{:.2e}_zetaX_{:.2e}_Tmin_{:.2e}_Nalpha_{:.2e}.dat'.format(Mpbh,fp,zUV,zX,Tm,Na)
+                    
                     np.savetxt(fileN, sve_info)
 
                     cnt +=1

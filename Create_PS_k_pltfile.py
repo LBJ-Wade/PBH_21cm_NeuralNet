@@ -3,9 +3,9 @@ import os
 import numpy as np
 from scipy.interpolate import interp1d
 
-Kfix = 1.
+Kfix = 0.15
 MpbhVal = 100
-fpbh = 1e-6
+fpbh = 1e-3
 zetaUV = 50
 zetaX = 2e56
 Tmin = 5e4
