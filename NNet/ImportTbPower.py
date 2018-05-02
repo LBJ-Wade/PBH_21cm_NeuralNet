@@ -10,11 +10,11 @@ class ImportGraph():
             saver = tf.train.import_meta_graph(loc + '.meta')
             saver.restore(self.sess, loc)
             self.activation = tf.get_collection('activation')[0]
-        self.mpbh = mpbh
-        self.zfix = zfix
+
 
         self.scalar = StandardScaler()
-        fileNd = '../TbFiles/TbFull_Power_Mpbh_{:.0e}_Zval_{:.2f}.dat'.format(self.mpbh, self.zfix)
+        fileNd = '../TbFiles/TbFull_Power_Mpbh_{:.0e}_Zval_{:.2f}.dat'.format(mpbh, zfix)
+
         tbVals = np.loadtxt(fileNd)
         data = tbVals[:, :6]
         dataSTD = self.scalar.fit_transform(data)

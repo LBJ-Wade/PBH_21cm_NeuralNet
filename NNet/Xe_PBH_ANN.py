@@ -91,7 +91,7 @@ class Xe_PBH_Nnet(object):
 
         # Forward propagation
         self.yhat = self.forwardprop(self.X, self.w_1, self.w_2, self.w_3)
-
+        
         # Backward propagation
         self.cost = tf.reduce_sum(tf.square((self.y - self.yhat), name="cost"))
         self.updates = tf.train.GradientDescentOptimizer(self.grad_stepsize).minimize(self.cost)

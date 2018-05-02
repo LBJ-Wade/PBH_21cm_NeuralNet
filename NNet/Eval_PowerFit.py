@@ -4,12 +4,12 @@ from scipy.interpolate import interp2d
 from Tb_PBH_ANN import *
 import time
 import itertools
-from ImportGraph import *
+from ImportTbPower import *
 
 arrayName = 'hera127'
 arrayErr = np.loadtxt('../Sensitivities/NoiseVals_'+arrayName+'.dat')
 sensty_arr = interp2d(arrayErr[:,0], arrayErr[:,1], arrayErr[:,2], kind='linear', bounds_error=False, fill_value=1e5)
-
+hlittle = 0.67
 tb_analysis = True
 GlobalTb = False
 
@@ -23,9 +23,9 @@ zetaX_L = np.logspace(np.log10(2e55), np.log10(2e57), Pts_perVar)
 Tmin_L = np.logspace(4, 5, Pts_perVar)
 Nalpha_L = np.logspace(np.log10(4e2), np.log10(4e4), Pts_perVar)
 k_List = np.logspace(np.log10(0.15), np.log10(1), Pts_perVar)
-Z_list = [8.38, 8.85, 9.34, 9.86, 10.40, 10.97, 11.57, 12.20, 12.86, 13.55,
-          14.28, 15.05, 15.85, 16.69, 17.57, 18.50, 19.48]
-#Z_list = [17.57]
+#Z_list = [8.38, 8.85, 9.34, 9.86, 10.40, 10.97, 11.57, 12.20, 12.86, 13.55,
+#          14.28, 15.05, 15.85, 16.69, 17.57, 18.50, 19.48]
+Z_list = [8.38, 17.57]
 
 totalParmas = float(len(fpbh_L)*len(zetaX_L)*len(zetaUV_L)*len(Tmin_L)*len(Nalpha_L))
 cnt = 0
@@ -43,7 +43,7 @@ for j,zz in enumerate(Z_list):
     initPBH.load_matrix_elems()
     vechold = []
     for i,kk in enumerate(k_List):
-        error[j,i] = sensty_arr(zz, kk)
+        error[j,i] = sensty_arr(zz, kk/hlittle)
         vechold.append([np.log10(kk), -8., np.log10(50), np.log10(2e56), np.log10(5e4), np.log10(4e3)])
     true_list[j,:] = list(itertools.chain.from_iterable(initPBH.rapid_eval(vechold)))
     error[j,:] = np.sqrt(error[j,:]**2. + (0.3*true_list[j,:])**2.)
@@ -58,19 +58,16 @@ for fp in fpbh_L:
                     chi2 = 0.
                     param_list.append([fp, zUV, zX, Tm, Na])
                     for j,zz in enumerate(Z_list):
-#                        initPBH = Tb_PBH_Nnet(Mpbh, globalTb=GlobalTb, HiddenNodes=Nhidden, zfix=zz)
-#                        initPBH.main_nnet()
-#                        initPBH.load_matrix_elems()
-                        t0 = time.time()
+#                        t0 = time.time()                        
                         eval_list = []
                         for i,kk in enumerate(k_List):
                             eval_list.append([np.log10(kk), np.log10(fp), np.log10(zUV), np.log10(zX), np.log10(Tm), np.log10(Na)])
-#                        val = initPBH.rapid_eval(eval_list)
                         val = modeler[j].run_yhat(eval_list)
-                        
+
                         chi2 += np.sum(((val.flatten() - true_list[j,:]) / error[j,:])**2.)
-                        t1 = time.time()
-                        print zz, np.sum(((val.flatten() - true_list[j,:]) / error[j,:])**2.)
+#                        t1 = time.time()
+#                        print t1 - t0
+
                     cnt +=1
                     if cnt%10000 == 0:
                         print 'Finished Run: {:.0f}/{:.0f}'.format(cnt, totalParmas)
