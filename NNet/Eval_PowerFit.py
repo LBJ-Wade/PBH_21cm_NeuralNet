@@ -9,7 +9,7 @@ from ImportTbPower import *
 arrayName = 'hera127'
 arrayErr = np.loadtxt('../Sensitivities/NoiseVals_'+arrayName+'.dat')
 sensty_arr = interp2d(arrayErr[:,0], arrayErr[:,1], arrayErr[:,2], kind='linear', bounds_error=False, fill_value=1e5)
-hlittle = 0.67
+hlittle = 0.7
 tb_analysis = True
 GlobalTb = False
 
@@ -17,14 +17,20 @@ Mpbh = 100
 Nhidden = 50
 
 Pts_perVar = 10
-fpbh_L = np.logspace(-7, -2, Pts_perVar)
-zetaUV_L = np.linspace(15, 90, Pts_perVar)
-zetaX_L = np.logspace(np.log10(2e55), np.log10(2e57), Pts_perVar)
-Tmin_L = np.logspace(4, 5, Pts_perVar)
-Nalpha_L = np.logspace(np.log10(4e2), np.log10(4e4), Pts_perVar)
+#fpbh_L = np.logspace(-7, -2, Pts_perVar)
+#zetaUV_L = np.linspace(15, 90, Pts_perVar)
+#zetaX_L = np.logspace(np.log10(2e55), np.log10(2e57), Pts_perVar)
+#Tmin_L = np.logspace(4, 5, Pts_perVar)
+#Nalpha_L = np.logspace(np.log10(4e2), np.log10(4e4), Pts_perVar)
 k_List = np.logspace(np.log10(0.15), np.log10(1), Pts_perVar)
+
 #Z_list = [8.38, 8.85, 9.34, 9.86, 10.40, 10.97, 11.57, 12.20, 12.86, 13.55,
 #          14.28, 15.05, 15.85, 16.69, 17.57, 18.50, 19.48]
+fpbh_L = [1e-8, 1e-7, 1e-6, 1e-5, 1e-4, 1e-3, 1e-2]
+zetaUV_L = [50]
+zetaX_L = [2e55, 2e56, 2e57]
+Tmin_L = [5e4]
+Nalpha_L = [4e2, 4e3, 4e4]
 Z_list = [8.38, 17.57]
 
 totalParmas = float(len(fpbh_L)*len(zetaX_L)*len(zetaUV_L)*len(Tmin_L)*len(Nalpha_L))

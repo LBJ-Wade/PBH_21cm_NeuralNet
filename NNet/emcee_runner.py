@@ -24,9 +24,9 @@ sensty_arr = interp2d(arrayErr[:,0], arrayErr[:,1], arrayErr[:,2], kind='linear'
 Mpbh = 100
 ln_fpbhMAX = -2
 Nhidden = 50
-BurnPTS = 50
-NSTEPS = 1000
-ndim, nwalkers = 5, 1000
+BurnPTS = 500
+NSTEPS = 1e6
+ndim, nwalkers = 5, 100
 
 filePTS = 'mcmc_pts/MCMC_pts_Mpbh_{:.0f}_'.format(Mpbh)+arrayName+'_.dat'
 scterPlt = 'mcmc_pts/MCMC_PLT_Mpbh_{:.0f}_'.format(Mpbh)+arrayName+'_.pdf'
@@ -35,10 +35,12 @@ cornerPLT = 'mcmc_pts/Corner_Mpbh_{:.0f}_'.format(Mpbh)+arrayName+'_.pdf'
 k_List = np.logspace(np.log10(0.1), np.log10(2), 15.)
 #Z_list = [8.38, 8.85, 9.34, 9.86, 10.40, 10.97, 11.57, 12.20, 12.86, 13.55,
 #          14.28, 15.05, 15.85, 16.69, 17.57, 18.50, 19.48]
-Z_list = [8.38, 17.57]
+Z_list = [12.86]
 
-init_params = [-5., 1.6, 56., 4.5, 3.]
-Truth_params =  [-8., np.log10(50.), np.log10(2.e56), np.log10(5e4), np.log10(4e3)]
+init_params = [-7., 1.6, np.log10(2e56), np.log10(5e4), np.log10(4e3)]
+params_low = [-8., np.log10(15), np.log10(2e55), np.log10(1e4), np.log10(4e2)]
+params_space = [ln_fpbhMAX - params_low[0], np.log10(90) - np.log10(15), 2, 1, 2]
+Truth_params =  [-7.95, np.log10(50), np.log10(2e56), np.log10(5e4), np.log10(4e3)] #actually fpbh = -8
 
 modeler = np.zeros(len(Z_list), dtype=object)
 error = np.zeros((len(Z_list), len(k_List)))
@@ -52,7 +54,7 @@ for j,zz in enumerate(Z_list):
         error[j,i] = sensty_arr(zz, kk/hlittle)
         vechold.append([np.log10(kk), -8., np.log10(50), np.log10(2e56), np.log10(5e4), np.log10(4e3)])
     true_list[j,:] = list(itertools.chain.from_iterable(initPBH.rapid_eval(vechold)))
-    error[j,:] = np.sqrt(error[j,:]**2. + (0.3*true_list[j,:])**2.)
+    #error[j,:] = np.sqrt(error[j,:]**2. + (0.3*true_list[j,:])**2.)
 
     modeler[j] = ImportGraph(initPBH.fileN, Mpbh, zz)
 
@@ -68,9 +70,6 @@ def ln_like(theta):
     lnf, lnUV, lnX, lnT, lnN = theta
     evalPts = np.zeros((len(Z_list), len(k_List)))
     for j,zz in enumerate(Z_list):
-#        initPBH = Tb_PBH_Nnet(Mpbh, globalTb=False, HiddenNodes=Nhidden, zfix=zz)
-#        initPBH.main_nnet()
-#        initPBH.load_matrix_elems()
         eval_list = []
         for i,kk in enumerate(k_List):
             eval_list.append([np.log10(kk), lnf, lnUV, lnX, lnT, lnN])
@@ -83,31 +82,41 @@ def lnprob(theta):
         return -np.inf
     return lp + ln_like(theta)
 
-pos = [init_params + 1e-2*np.random.randn(ndim) for i in range(nwalkers)]
-
+#pos = [init_params + 1e-1*np.random.randn(ndim) for i in range(nwalkers)]
+pos = [params_low + params_space*np.random.rand(ndim) for i in range(nwalkers)]
+print 'Running Sampler.'
 sampler = emcee.EnsembleSampler(nwalkers, ndim, lnprob)
 sampler.run_mcmc(pos, NSTEPS)
 
-print 'Making burn-in plot...'
-fig, axes = plt.subplots(5, 1, sharex=True)
-for j in range(ndim):
-    for i in range(nwalkers):
-        axes[j].plot(sampler.chain[i,:,j], lw=1, color='k',alpha=0.3)
-        if j == 0:
-            axes[j].set_ylim([-8, ln_fpbhMAX])
-        if j == 1:
-            axes[j].set_ylim([1, 2])
-        if j == 2:
-            axes[j].set_ylim([55, 57])
-        if j == 3:
-            axes[j].set_ylim([4, 5])
-        if j == 4:
-            axes[j].set_ylim([2, 5])
-plt.savefig(scterPlt)
+try:
+    print 'Autocorrelation Time: ', sampler.get_autocorr_time()
+except:
+    pass
+
+print 'Making Plots...'
+#print 'Making burn-in plot...'
+#fig, axes = plt.subplots(5, 1, sharex=True)
+#for j in range(ndim):
+#    for i in range(nwalkers):
+#        axes[j].plot(sampler.chain[i,:,j], lw=1, color='k',alpha=0.3)
+#        if j == 0:
+#            axes[j].set_ylim([-8, ln_fpbhMAX])
+#        if j == 1:
+#            axes[j].set_ylim([1, 2])
+#        if j == 2:
+#            axes[j].set_ylim([55, 57])
+#        if j == 3:
+#            axes[j].set_ylim([4, 5])
+#        if j == 4:
+#            axes[j].set_ylim([2, 5])
+#plt.savefig(scterPlt)
 
 samples = sampler.chain[:, BurnPTS:, :].reshape((-1, ndim))
+
+
 fig = corner.corner(samples, labels=[r"$f_{pbh}$", r"$\zeta_{UV}$", r"$\zeta_X$", "$T$", r"$N_{\alpha}$"],
-                      truths=Truth_params)
+                      truths=Truth_params, color='k', quantiles=[0.16, 0.84, 0.95],
+                      show_titles=True, title_kwargs={"fontsize": 12})
 fig.savefig(cornerPLT)
 
 np.savetxt(filePTS, samples)
