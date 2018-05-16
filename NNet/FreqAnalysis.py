@@ -4,10 +4,10 @@ import tensorflow as tf
 from ImportTbPower import *
 import itertools
 from Tb_PBH_ANN import *
-from scipy.optimize import minimize
-from scipy.interpolate import interp2d
+from scipy.optimize import minimize, fsolve
+from scipy.interpolate import interp2d, interp1d
 
-arrayName = 'SKA'
+arrayName = 'Hera127'
 arrayErr = np.loadtxt('../Sensitivities/NoiseVals_'+arrayName+'.dat')
 sensty_arr = interp2d(arrayErr[:,0], arrayErr[:,1], arrayErr[:,2], kind='linear', bounds_error=False, fill_value=1e5)
 hlittle = 0.7
@@ -20,7 +20,8 @@ Nhidden = 50
 #fpbhL = [1e-8, 1e-7, 1e-6, 1e-5, 1e-4, 1e-3, 1e-2]
 fpbhL = np.logspace(-8, -2, 20)
 
-k_List = np.logspace(np.log10(0.15), np.log10(1), 10.)
+k_List = np.logspace(np.log10(0.15), np.log10(1), 6.)
+#k_List = [0.15]
 Z_list = [8.38, 8.85, 9.34, 9.86, 10.40, 10.97, 11.57, 12.20, 12.86, 13.55,
           14.28, 15.05, 15.85, 16.69, 17.57, 18.50, 19.48]
 
@@ -67,3 +68,21 @@ for fpbh in fpbhL:
     
     
 np.savetxt('../Sensitivities/Frequentist_Mpbh_{:.0e}_'.format(Mpbh) + arrayName + '.dat', np.column_stack((fpbhL, np.asarray(bndVals))))
+
+for i in range(len(fpbhL)):
+    
+    if bndVals[-1 - i] > chiSqV:
+        continue
+    else:
+        indxCut = i
+        break
+print bndVals
+fpbhL = fpbhL[-1-indxCut:]
+bndVals = bndVals[-1-indxCut:]
+print np.column_stack((fpbhL, bndVals))
+chi2interp = interp1d(np.log10(fpbhL), bndVals, fill_value=1e2, bounds_error=False)
+
+guessX = np.mean(np.log10(fpbhL))
+sln = fsolve(lambda x: chi2interp(x) - chiSqV, guessX)
+print 'Bound at fpbh = ', sln
+

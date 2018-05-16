@@ -25,7 +25,7 @@ class Tb_PBH_Nnet(object):
             self.dirName = 'MetaGraphs/Tb_PBH_Mass_{:.0e}_Global'.format(self.mPBH)
             self.fileN = self.dirName + '/PBH21cm_Graph_Global_Mpbh_{:.0e}'.format(self.mPBH)
         else:
-            self.grad_stepsize = 1e-5
+            self.grad_stepsize = 1e-6
             self.errThresh = 0.
 
             self.dirName = 'MetaGraphs/Tb_PBH_Mass_{:.0e}_Power_Zval_{:.2f}'.format(self.mPBH, self.zfix)
@@ -50,6 +50,7 @@ class Tb_PBH_Nnet(object):
 
     def get_data(self, frac_test=0.25):
         self.scalar = StandardScaler()
+        self.scalar_Y = StandardScaler()
         if self.globalTb:
             fileNd = '../TbFiles/TbFull_Mpbh_{:.0e}.dat'.format(self.mPBH)
             inputN = 6
@@ -65,6 +66,7 @@ class Tb_PBH_Nnet(object):
             target = np.log10(target)
 
         dataSTD = self.scalar.fit_transform(data)
+        
     
         self.train_size = (1.-frac_test)*len(tbVals[:,0])
         self.test_size = frac_test*len(tbVals[:,0])
@@ -91,6 +93,7 @@ class Tb_PBH_Nnet(object):
             else:
                 self.err_test[i] = self.test_y[i]
 
+        
         # Layer's sizes
         self.x_size = self.train_X.shape[1]   # Number of input nodes: [z, k?, fpbh, zeta_UV, zetaX, tmin, nalpha]
         self.y_size = self.train_y.shape[1]   # Value of Tb
@@ -120,7 +123,7 @@ class Tb_PBH_Nnet(object):
             # Error Check
             self.perr_train = tf.reduce_sum(tf.abs((10.**self.y - 10.**self.yhat)/10.**self.err_train))
             self.perr_test = tf.reduce_sum(tf.abs((10.**self.y - 10.**self.yhat)/10.**self.err_test))
-        
+ 
         self.updates = tf.train.GradientDescentOptimizer(self.grad_stepsize).minimize(self.cost)
         
         self.saveNN = tf.train.Saver()
@@ -142,8 +145,11 @@ class Tb_PBH_Nnet(object):
                                                       self.y: self.train_y[start:end]})
 
                 if i % 100 == 0:
+                    
                     train_accuracy = sess.run(self.perr_train, feed_dict={self.X: self.train_X, self.y: self.train_y})
                     test_accuracy = sess.run(self.perr_test, feed_dict={self.X: self.test_X, self.y: self.test_y})
+                    
+                    
                     print("Epoch = %d, train accuracy = %.7e, test accuracy = %.7e"
                           % (i + 1, train_accuracy/len(self.train_X), test_accuracy/len(self.test_X)))
                     
