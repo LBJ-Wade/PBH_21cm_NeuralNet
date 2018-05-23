@@ -17,7 +17,7 @@ rc('text', usetex=True)
 
 
 hlittle = 0.7
-arrayName = 'hera127'
+arrayName = 'SKA'
 arrayErr = np.loadtxt('../Sensitivities/NoiseVals_'+arrayName+'.dat')
 sensty_arr = interp2d(arrayErr[:,0], arrayErr[:,1], arrayErr[:,2], kind='linear', bounds_error=False, fill_value=1e5)
 
@@ -83,7 +83,8 @@ def lnprob(theta):
     return lp + ln_like(theta)
 
 #pos = [init_params + 1e-1*np.random.randn(ndim) for i in range(nwalkers)]
-pos = [params_low + params_space*np.random.rand(ndim) for i in range(nwalkers)]
+pos = np.asarray([params_low + params_space*np.random.rand(ndim) for i in range(nwalkers)])
+pos[:,0] = -7
 
 print 'Running Sampler.'
 sampler = emcee.EnsembleSampler(nwalkers, ndim, lnprob, threads=1)
@@ -92,7 +93,7 @@ sampler = emcee.EnsembleSampler(nwalkers, ndim, lnprob, threads=1)
 #f = open("chain_mpbh_{:.0e}.dat".format(Mpbh), "w")
 #f.close()
 
-nsteps = 5000
+nsteps = 1e5
 for i, result in enumerate(sampler.sample(pos, iterations=nsteps)):
     if (i+1) % 100 == 0:
         print("{0:5.1%}".format(float(i) / nsteps))
@@ -122,6 +123,7 @@ print 'Making Plots...'
 
 samples = sampler.chain[:, BurnPTS:, :].reshape((-1, ndim))
 
+print '2sigma limit: ', np.percentile(samples, [95])
 
 fig = corner.corner(samples, labels=[r"$f_{pbh}$", r"$\zeta_{UV}$", r"$\zeta_X$", "$T$", r"$N_{\alpha}$"],
                       truths=Truth_params, color='k', quantiles=[0.16, 0.84, 0.95],
