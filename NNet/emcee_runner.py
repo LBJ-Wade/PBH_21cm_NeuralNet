@@ -16,7 +16,7 @@ rc('font',**{'family':'serif','serif':['Times','Palatino']})
 rc('text', usetex=True)
 
 
-hlittle = 0.67
+hlittle = 0.7
 arrayName = 'hera127'
 arrayErr = np.loadtxt('../Sensitivities/NoiseVals_'+arrayName+'.dat')
 sensty_arr = interp2d(arrayErr[:,0], arrayErr[:,1], arrayErr[:,2], kind='linear', bounds_error=False, fill_value=1e5)
@@ -84,14 +84,23 @@ def lnprob(theta):
 
 #pos = [init_params + 1e-1*np.random.randn(ndim) for i in range(nwalkers)]
 pos = [params_low + params_space*np.random.rand(ndim) for i in range(nwalkers)]
-print 'Running Sampler.'
-sampler = emcee.EnsembleSampler(nwalkers, ndim, lnprob)
-sampler.run_mcmc(pos, NSTEPS)
 
-try:
-    print 'Autocorrelation Time: ', sampler.get_autocorr_time()
-except:
-    pass
+print 'Running Sampler.'
+sampler = emcee.EnsembleSampler(nwalkers, ndim, lnprob, threads=1)
+#sampler.run_mcmc(pos, NSTEPS)
+
+#f = open("chain_mpbh_{:.0e}.dat".format(Mpbh), "w")
+#f.close()
+
+nsteps = 5000
+for i, result in enumerate(sampler.sample(pos, iterations=nsteps)):
+    if (i+1) % 100 == 0:
+        print("{0:5.1%}".format(float(i) / nsteps))
+
+#try:
+#    print 'Autocorrelation Time: ', sampler.get_autocorr_time()
+#except:
+#    pass
 
 print 'Making Plots...'
 #print 'Making burn-in plot...'
