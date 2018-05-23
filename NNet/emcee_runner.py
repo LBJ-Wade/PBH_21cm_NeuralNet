@@ -24,9 +24,9 @@ sensty_arr = interp2d(arrayErr[:,0], arrayErr[:,1], arrayErr[:,2], kind='linear'
 Mpbh = 100
 ln_fpbhMAX = -2
 Nhidden = 50
-BurnPTS = 500
+BurnPTS = 100
 NSTEPS = 1e6
-ndim, nwalkers = 5, 100
+ndim, nwalkers = 5, 10
 
 filePTS = 'mcmc_pts/MCMC_pts_Mpbh_{:.0f}_'.format(Mpbh)+arrayName+'_.dat'
 scterPlt = 'mcmc_pts/MCMC_PLT_Mpbh_{:.0f}_'.format(Mpbh)+arrayName+'_.pdf'
@@ -84,19 +84,12 @@ def lnprob(theta):
 
 #pos = [init_params + 1e-1*np.random.randn(ndim) for i in range(nwalkers)]
 pos = np.asarray([params_low + params_space*np.random.rand(ndim) for i in range(nwalkers)])
-pos[:,0] = -7
+pos[:,0] = -7.
 
 print 'Running Sampler.'
 sampler = emcee.EnsembleSampler(nwalkers, ndim, lnprob, threads=1)
-#sampler.run_mcmc(pos, NSTEPS)
+sampler.run_mcmc(pos, NSTEPS)
 
-#f = open("chain_mpbh_{:.0e}.dat".format(Mpbh), "w")
-#f.close()
-
-nsteps = 1e5
-for i, result in enumerate(sampler.sample(pos, iterations=nsteps)):
-    if (i+1) % 100 == 0:
-        print("{0:5.1%}".format(float(i) / nsteps))
 
 #try:
 #    print 'Autocorrelation Time: ', sampler.get_autocorr_time()
@@ -123,9 +116,9 @@ print 'Making Plots...'
 
 samples = sampler.chain[:, BurnPTS:, :].reshape((-1, ndim))
 
-print '2sigma limit: ', np.percentile(samples, [95])
+print '2sigma limit: ', np.percentile(samples[:, 0], [95])
 
-fig = corner.corner(samples, labels=[r"$f_{pbh}$", r"$\zeta_{UV}$", r"$\zeta_X$", "$T$", r"$N_{\alpha}$"],
+fig = corner.corner(samples, labels=[r"$f_{pbh}$", r"$\zeta_{UV}$", r"$\zeta_X$", "T", r"$N_{\alpha}$"],
                       truths=Truth_params, color='k', quantiles=[0.16, 0.84, 0.95],
                       show_titles=True, title_kwargs={"fontsize": 12})
 fig.savefig(cornerPLT)
