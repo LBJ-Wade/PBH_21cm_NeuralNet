@@ -54,7 +54,7 @@ for j,zz in enumerate(Z_list):
         error[j,i] = sensty_arr(zz, kk/hlittle)
         vechold.append([np.log10(kk), -8., np.log10(50), np.log10(2e56), np.log10(5e4), np.log10(4e3)])
     true_list[j,:] = list(itertools.chain.from_iterable(initPBH.rapid_eval(vechold)))
-    #error[j,:] = np.sqrt(error[j,:]**2. + (0.3*true_list[j,:])**2.)
+    error[j,:] = np.sqrt(error[j,:]**2. + (0.4*true_list[j,:])**2.)
 
     modeler[j] = ImportGraph(initPBH.fileN, Mpbh, zz)
 
