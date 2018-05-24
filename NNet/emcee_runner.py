@@ -24,18 +24,18 @@ sensty_arr = interp2d(arrayErr[:,0], arrayErr[:,1], arrayErr[:,2], kind='linear'
 Mpbh = 100
 ln_fpbhMAX = -2
 Nhidden = 50
-BurnPTS = 100
-NSTEPS = 1e6
-ndim, nwalkers = 5, 10
+BurnPTS = 500
+NSTEPS = 1e3
+ndim, nwalkers = 5, 50
 
 filePTS = 'mcmc_pts/MCMC_pts_Mpbh_{:.0f}_'.format(Mpbh)+arrayName+'_.dat'
 scterPlt = 'mcmc_pts/MCMC_PLT_Mpbh_{:.0f}_'.format(Mpbh)+arrayName+'_.pdf'
 cornerPLT = 'mcmc_pts/Corner_Mpbh_{:.0f}_'.format(Mpbh)+arrayName+'_.pdf'
 
-k_List = np.logspace(np.log10(0.1), np.log10(2), 15.)
-#Z_list = [8.38, 8.85, 9.34, 9.86, 10.40, 10.97, 11.57, 12.20, 12.86, 13.55,
-#          14.28, 15.05, 15.85, 16.69, 17.57, 18.50, 19.48]
-Z_list = [12.86]
+k_List = np.logspace(np.log10(0.15), np.log10(1), 6)
+Z_list = [8.38, 8.85, 9.34, 9.86, 10.40, 10.97, 11.57, 12.20, 12.86, 13.55,
+          14.28, 15.05, 15.85, 16.69, 17.57, 18.50, 19.48]
+#Z_list = [12.86]
 
 init_params = [-7., 1.6, np.log10(2e56), np.log10(5e4), np.log10(4e3)]
 params_low = [-8., np.log10(15), np.log10(2e55), np.log10(1e4), np.log10(4e2)]
@@ -84,12 +84,14 @@ def lnprob(theta):
 
 #pos = [init_params + 1e-1*np.random.randn(ndim) for i in range(nwalkers)]
 pos = np.asarray([params_low + params_space*np.random.rand(ndim) for i in range(nwalkers)])
-pos[:,0] = -7.
+pos[:,0] = -6. + 1e-2*np.random.rand(nwalkers)
+
+f = open("chain.dat", "w")
+f.close()
 
 print 'Running Sampler.'
 sampler = emcee.EnsembleSampler(nwalkers, ndim, lnprob, threads=1)
 sampler.run_mcmc(pos, NSTEPS)
-
 
 #try:
 #    print 'Autocorrelation Time: ', sampler.get_autocorr_time()
@@ -115,11 +117,15 @@ print 'Making Plots...'
 #plt.savefig(scterPlt)
 
 samples = sampler.chain[:, BurnPTS:, :].reshape((-1, ndim))
+#print samples
 
 print '2sigma limit: ', np.percentile(samples[:, 0], [95])
 
 fig = corner.corner(samples, labels=[r"$f_{pbh}$", r"$\zeta_{UV}$", r"$\zeta_X$", "T", r"$N_{\alpha}$"],
-                      truths=Truth_params, color='k', quantiles=[0.16, 0.84, 0.95],
+                      truths=Truth_params, color='k', range=[(params_low[0],ln_fpbhMAX),
+                      (params_low[1], np.log10(90)),(params_low[2],np.log10(2e57)),
+                      (np.log10(1e4), np.log10(1e5)), (np.log10(4e2), np.log10(4e4))],
+                      quantiles=[0.16, 0.84, 0.95],
                       show_titles=True, title_kwargs={"fontsize": 12})
 fig.savefig(cornerPLT)
 
